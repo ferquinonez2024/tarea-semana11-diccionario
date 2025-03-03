@@ -1,1 +1,1 @@
-# tarea-semana11-diccionario
+# tarea-semana11-traductor
