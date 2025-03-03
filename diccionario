@@ -1,0 +1,112 @@
+using System;
+using System.Collections.Generic;
+
+public class Traductor
+{
+    private Dictionary<string, string> diccionarioInglesEspanol;
+    private Dictionary<string, string> diccionarioEspanolIngles;
+
+    public Traductor()
+    {
+        diccionarioInglesEspanol = new Dictionary<string, string>()
+        {
+            {"time", "tiempo"}, {"person", "persona"}, {"year", "año"}, {"way", "camino/forma"},
+            {"day", "día"}, {"thing", "cosa"}, {"man", "hombre"}, {"world", "mundo"},
+            {"life", "vida"}, {"hand", "mano"}, {"part", "parte"}, {"child", "niño/a"},
+            {"eye", "ojo"}, {"woman", "mujer"}, {"place", "lugar"}, {"work", "trabajo"},
+            {"week", "semana"}, {"case", "caso"}, {"point", "punto/tema"}, {"government", "gobierno"},
+            {"company", "empresa/compañía"}
+        };
+
+        diccionarioEspanolIngles = new Dictionary<string, string>();
+        foreach (var par in diccionarioInglesEspanol)
+        {
+            diccionarioEspanolIngles[par.Value] = par.Key;
+        }
+    }
+
+    public string Traducir(string frase, bool inglesAEspanol)
+    {
+        string[] palabras = frase.ToLower().Split(' ');
+        string[] palabrasTraducidas = new string[palabras.Length];
+        Dictionary<string, string> diccionarioUsado = inglesAEspanol ? diccionarioInglesEspanol : diccionarioEspanolIngles;
+
+        for (int i = 0; i < palabras.Length; i++)
+        {
+            if (diccionarioUsado.ContainsKey(palabras[i]))
+            {
+                palabrasTraducidas[i] = diccionarioUsado[palabras[i]];
+            }
+            else
+            {
+                palabrasTraducidas[i] = palabras[i];
+            }
+        }
+
+        return string.Join(" ", palabrasTraducidas);
+    }
+
+    public void AgregarPalabra(string palabra, string traduccion, bool inglesAEspanol)
+    {
+        if (inglesAEspanol)
+        {
+            diccionarioInglesEspanol[palabra.ToLower()] = traduccion.ToLower();
+            diccionarioEspanolIngles[traduccion.ToLower()] = palabra.ToLower();
+        }
+        else
+        {
+            diccionarioEspanolIngles[palabra.ToLower()] = traduccion.ToLower();
+            diccionarioInglesEspanol[traduccion.ToLower()] = palabra.ToLower();
+        }
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Traductor traductor = new Traductor();
+        int opcion;
+
+        do
+        {
+            Console.WriteLine("MENU");
+            Console.WriteLine("=======================================================");
+            Console.WriteLine("1. Traducir una frase");
+            Console.WriteLine("2. Ingresar más palabras al diccionario");
+            Console.WriteLine("0. Salir");
+            Console.Write("Seleccione una opción: ");
+            opcion = int.Parse(Console.ReadLine());
+
+            switch (opcion)
+            {
+                case 1:
+                    Console.Write("Ingrese la frase: ");
+                    string frase = Console.ReadLine();
+                    Console.Write("¿Inglés a español? (s/n): ");
+                    bool inglesAEspanol = Console.ReadLine().ToLower() == "s";
+                    string fraseTraducida = traductor.Traducir(frase, inglesAEspanol);
+                    Console.WriteLine("Su frase traducida es: " + fraseTraducida);
+                    break;
+                case 2:
+                    Console.Write("Ingrese la palabra: ");
+                    string nuevaPalabra = Console.ReadLine();
+                    Console.Write("Ingrese la traducción: ");
+                    string nuevaTraduccion = Console.ReadLine();
+                    Console.Write("¿Inglés a español? (s/n): ");
+                    inglesAEspanol = Console.ReadLine().ToLower() == "s";
+                    traductor.AgregarPalabra(nuevaPalabra, nuevaTraduccion, inglesAEspanol);
+                    Console.WriteLine("Palabra agregada al diccionario.");
+                    break;
+                case 0:
+                    Console.WriteLine("Saliendo del programa...");
+                    break;
+                default:
+                    Console.WriteLine("Opción no válida.");
+                    break;
+            }
+
+            Console.WriteLine();
+        } while (opcion != 0);
+    }
+}
